@@ -1,0 +1,14 @@
+{
+  "packages": {
+    "cowsay": {
+      "version": "1.0.0",
+      "description": "Prints an ASCII cow saying a message",
+      "file": "packages/cowsay/index.js"
+    },
+    "calc": {
+      "version": "1.0.0",
+      "description": "A simple terminal calculator",
+      "file": "packages/calc/index.js"
+    }
+  }
+}
