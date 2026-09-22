@@ -24,6 +24,26 @@
       "version": "1.0.0",
       "description": "Persistent CLI task manager",
       "file": "packages/todo/index.js"
+    },
+    "uname": {
+      "version": "1.0.0",
+      "description": "Prints system and kernel information",
+      "file": "packages/uname/index.js"
+    },
+    "weather": {
+      "version": "1.0.0",
+      "description": "Fetches current weather forecast for a city",
+      "file": "packages/weather/index.js"
+    },
+    "matrix": {
+      "version": "1.0.0",
+      "description": "Renders a matrix digital rain frame",
+      "file": "packages/matrix/index.js"
+    },
+    "grep": {
+      "version": "1.0.0",
+      "description": "Filters text lines matching a pattern",
+      "file": "packages/grep/index.js"
     }
   }
 }
