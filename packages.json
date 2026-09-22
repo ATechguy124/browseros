@@ -7,8 +7,23 @@
     },
     "calc": {
       "version": "1.0.0",
-      "description": "A simple terminal calculator",
+      "description": "Evaluates math expressions",
       "file": "packages/calc/index.js"
+    },
+    "fortune": {
+      "version": "1.0.0",
+      "description": "Displays a random quote",
+      "file": "packages/fortune/index.js"
+    },
+    "curl": {
+      "version": "1.0.0",
+      "description": "Fetches content from an external URL",
+      "file": "packages/curl/index.js"
+    },
+    "todo": {
+      "version": "1.0.0",
+      "description": "Persistent CLI task manager",
+      "file": "packages/todo/index.js"
     }
   }
 }
