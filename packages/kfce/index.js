@@ -136,7 +136,7 @@
 
   // Add items to Start Menu
   addMenuItem("🎨 Paint App", () => launchBinary("paint"));
-  addMenuItem("🐮 Cow Says", () => launchBinary("cowsay"));
+  addMenuItem("🐍", () => launchBinary("snake"));
   addMenuItem("🖥️ Terminal View", () => {
     clearInterval(clockInterval);
     desktop.remove();
@@ -176,6 +176,7 @@
   };
 
   iconArea.appendChild(createDesktopIcon("Paint", "🎨", () => launchBinary("paint")));
+  iconArea.appendChild(createDesktopIcon("Snake", "🐍", () => launchBinary("snake")));
   iconArea.appendChild(createDesktopIcon("Terminal", "💻", () => {
     clearInterval(clockInterval);
     desktop.remove();
