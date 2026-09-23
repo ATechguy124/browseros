@@ -57,7 +57,7 @@
     },
     "kfce": {
       "version": "1.0.0",
-      "description": "Lightweight graphical user interface"
+      "description": "Lightweight graphical user interface",
       "file": "packages/kfce/index.js"
     }
   }
