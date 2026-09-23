@@ -10,6 +10,46 @@
       "description": "Evaluates math expressions",
       "file": "packages/calc/index.js"
     },
+    "fortune": {
+      "version": "1.0.0",
+      "description": "Displays a random quote",
+      "file": "packages/fortune/index.js"
+    },
+    "curl": {
+      "version": "1.0.0",
+      "description": "Fetches content from an external URL",
+      "file": "packages/curl/index.js"
+    },
+    "todo": {
+      "version": "1.0.0",
+      "description": "Persistent CLI task manager",
+      "file": "packages/todo/index.js"
+    },
+    "uname": {
+      "version": "1.0.0",
+      "description": "Prints system and kernel information",
+      "file": "packages/uname/index.js"
+    },
+    "weather": {
+      "version": "1.0.0",
+      "description": "Fetches current weather forecast for a city",
+      "file": "packages/weather/index.js"
+    },
+    "matrix": {
+      "version": "1.0.0",
+      "description": "Renders a matrix digital rain frame",
+      "file": "packages/matrix/index.js"
+    },
+    "grep": {
+      "version": "1.0.0",
+      "description": "Filters text lines matching a pattern",
+      "file": "packages/grep/index.js"
+    },
+    "java": {
+      "version": "21.0.2",
+      "description": "OpenJDK Runtime Environment (x86_64 Emulated)",
+      "file": "packages/java/index.js"
+    },
     "paint": {
       "version": "1.0.0",
       "description": "Interactive Canvas Paint GUI Application",
@@ -17,7 +57,7 @@
     },
     "kfce": {
       "version": "1.0.0",
-      "description": "KFCE Lightweight Desktop Environment GUI",
+      "description": "Lightweight graphical user interface"
       "file": "packages/kfce/index.js"
     }
   }
