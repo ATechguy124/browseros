@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>BrowserOS Terminal</title>
+  <style>
+    body {
+      background-color: #1e1e1e;
+      color: #00ff66;
+      font-family: 'Courier New', Courier, monospace;
+      padding: 20px;
+      margin: 0;
+    }
+    #terminal {
+      width: 100%;
+      height: 85vh;
+      overflow-y: auto;
+      border: 1px solid #333;
+      padding: 10px;
+      box-sizing: border-box;
+      background: #111;
+    }
+    .input-line {
+      display: flex;
+      margin-top: 5px;
+    }
+    .prompt {
+      color: #00bfff;
+      margin-right: 8px;
+    }
+    input {
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-family: inherit;
+      font-size: 16px;
+      flex-grow: 1;
+      outline: none;
+    }
+    .output {
+      white-space: pre-wrap;
+      color: #ddd;
+      margin-bottom: 5px;
+    }
+    .error { color: #ff5555; }
+    .success { color: #50fa7b; }
+  </style>
+</head>
+<body>
+
+  <div id="terminal">
+    <div class="output">BrowserOS v1.0.0 Ready. Type "help" or "apt-get update" to begin.</div>
+  </div>
+
+  <div class="input-line">
+    <span class="prompt">user@browseros:~$</span>
+    <input type="text" id="cli" autofocus />
+  </div>
+
+<script>
+const REPO_BASE = "https://raw.githubusercontent.com/Atechguy124/browseros/main";
+
+// --- Virtual File System (VFS) ---
+class VFS {
+  constructor() {
+    this.storageKey = "browseros_vfs";
+    if (!localStorage.getItem(this.storageKey)) {
+      const initialFs = {
+        "/bin": {},
+        "/etc": {},
+        "/var/lib/apt": { "packages.json": null }
+      };
+      localStorage.setItem(this.storageKey, JSON.stringify(initialFs));
+    }
+  }
+
+  getFS() {
+    return JSON.parse(localStorage.getItem(this.storageKey));
+  }
+
+  saveFS(fs) {
+    localStorage.setItem(this.storageKey, JSON.stringify(fs));
+  }
+
+  writeFile(path, content) {
+    const fs = this.getFS();
+    fs[path] = content;
+    this.saveFS(fs);
+  }
+
+  readFile(path) {
+    const fs = this.getFS();
+    return fs[path] || null;
+  }
+
+  listFiles(dirPrefix) {
+    const fs = this.getFS();
+    return Object.keys(fs).filter(k => k.startsWith(dirPrefix));
+  }
+}
+
+const vfs = new VFS();
+const terminal = document.getElementById("terminal");
+const cli = document.getElementById("cli");
+
+function print(text, className = "output") {
+  const div = document.createElement("div");
+  div.className = className;
+  div.textContent = text;
+  terminal.appendChild(div);
+  terminal.scrollTop = terminal.scrollHeight;
+}
+
+// --- APT Package Manager ---
+const apt = {
+  async update() {
+    print("Reading package lists...", "output");
+    try {
+      const res = await fetch(`${REPO_BASE}/packages.json`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      vfs.writeFile("/var/lib/apt/packages.json", JSON.stringify(data));
+      print("Fetched package index from GitHub.", "success");
+      print("Package list updated successfully.", "success");
+    } catch (err) {
+      print(`Err: Failed to fetch index from GitHub (${err.message})`, "error");
+    }
+  },
+
+  async install(pkgName) {
+    const rawIndex = vfs.readFile("/var/lib/apt/packages.json");
+    if (!rawIndex) {
+      print("E: Package list empty. Run 'apt-get update' first.", "error");
+      return;
+    }
+
+    const index = JSON.parse(rawIndex);
+    const pkgInfo = index.packages[pkgName];
+
+    if (!pkgInfo) {
+      print(`E: Unable to locate package ${pkgName}`, "error");
+      return;
+    }
+
+    print(`Get:1 ${REPO_BASE}/${pkgInfo.file} [${pkgName}]`, "output");
+    try {
+      const res = await fetch(`${REPO_BASE}/${pkgInfo.file}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const code = await res.text();
+      
+      // Store package executable code in /bin/<package_name>
+      vfs.writeFile(`/bin/${pkgName}`, code);
+      print(`Unpacking ${pkgName} (${pkgInfo.version})...`, "output");
+      print(`Setting up ${pkgName} (${pkgInfo.version})...`, "success");
+      print(`Successfully installed ${pkgName}.`, "success");
+    } catch (err) {
+      print(`E: Failed to download package ${pkgName} (${err.message})`, "error");
+    }
+  }
+};
+
+// --- Command Processor ---
+cli.addEventListener("keydown", async (e) => {
+  if (e.key !== "Enter") return;
+  const input = cli.value.trim();
+  cli.value = "";
+  if (!input) return;
+
+  print(`user@browseros:~$ ${input}`, "prompt");
+  const parts = input.split(" ");
+  const cmd = parts[0];
+  const args = parts.slice(1);
+
+  switch (cmd) {
+    case "clear":
+      terminal.innerHTML = "";
+      break;
+
+    case "help":
+      print("Available system commands:");
+      print("  apt-get update          - Refresh package index from GitHub");
+      print("  apt-get install <pkg>  - Download and install binary from repo");
+      print("  ls /bin                 - List installed binaries");
+      print("  clear                   - Clear terminal screen");
+      break;
+
+    case "ls":
+      const prefix = args[0] || "/bin";
+      const files = vfs.listFiles(prefix);
+      if (files.length === 0) {
+        print(`Directory ${prefix} is empty.`);
+      } else {
+        files.forEach(f => print(f.replace(`${prefix}/`, "")));
+      }
+      break;
+
+    case "apt-get":
+      if (args[0] === "update") {
+        await apt.update();
+      } else if (args[0] === "install" && args[1]) {
+        await apt.install(args[1]);
+      } else {
+        print("Usage: apt-get [update | install <package_name>]", "error");
+      }
+      break;
+
+    default:
+      // Try executing binary from /bin
+      const binCode = vfs.readFile(`/bin/${cmd}`);
+      if (binCode) {
+        try {
+          const fn = eval(binCode);
+          const result = fn(args);
+          if (result) print(result, "output");
+        } catch (err) {
+          print(`RuntimeError in ${cmd}: ${err.message}`, "error");
+        }
+      } else {
+        print(`bash: ${cmd}: command not found`, "error");
+      }
+      break;
+  }
+});
+</script>
+</body>
+</html>
