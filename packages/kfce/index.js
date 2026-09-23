@@ -136,6 +136,7 @@
 
   // Add items to Start Menu
   addMenuItem("🎨 Paint App", () => launchBinary("paint"));
+  addMenuItem("🐮 Cow Says", () => launchBinary("cowsays"));
   addMenuItem("🖥️ Terminal View", () => {
     clearInterval(clockInterval);
     desktop.remove();
