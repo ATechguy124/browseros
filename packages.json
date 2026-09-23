@@ -45,5 +45,10 @@
       "description": "Filters text lines matching a pattern",
       "file": "packages/grep/index.js"
     }
+    "java": {
+      "version": "21.0.2",
+      "description": "OpenJDK Runtime Environment (x86_64 Emulated)",
+      "file": "packages/java/index.js"
+    }
   }
 }
