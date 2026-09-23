@@ -59,6 +59,11 @@
       "version": "1.0.0",
       "description": "Lightweight graphical user interface",
       "file": "packages/kfce/index.js"
+    },
+    "snake": {
+      "version": "1.0.0",
+      "description": "Classic Snake arcade GUI game",
+      "file": "packages/snake/index.js"
     }
   }
 }
