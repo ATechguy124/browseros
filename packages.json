@@ -49,6 +49,11 @@
       "version": "21.0.2",
       "description": "OpenJDK Runtime Environment (x86_64 Emulated)",
       "file": "packages/java/index.js"
+    },
+    "paint": {
+      "version": "1.0.0",
+      "description": "Interactive Canvas Paint GUI Application",
+      "file": "packages/paint/index.js"
     }
   }
 }
