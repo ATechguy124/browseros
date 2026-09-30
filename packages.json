@@ -9,6 +9,7 @@
       "version": "1.0.0",
       "description": "Prints Spacethemed ASCII art",
       "file": "packages/spaceart/index.js"
+    },
     "calc": {
       "version": "1.0.0",
       "description": "Evaluates math expressions",
