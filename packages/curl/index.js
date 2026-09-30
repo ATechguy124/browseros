@@ -1,40 +1,38 @@
 (async function(args) {
-  if (!args || args.length === 0) {
-    return "Usage: curl <url>";
-  }
-
+  if (!args || args.length === 0) return "Usage: curl <url>";
   let url = args[0];
 
-  // Auto-prepend https:// if protocol is omitted
   if (!/^https?:\/\//i.test(url)) {
     url = "https://" + url;
   }
 
   try {
-    const response = await fetch(url);
+    const res = await fetch(url);
+    if (!res.ok) return `curl: (HTTP ${res.status}) ${res.statusText}`;
 
-    if (!response.ok) {
-      return `curl: (HTTP ${response.status}) ${response.statusText}`;
+    const contentType = res.headers.get("content-type") || "";
+    let text = await res.text();
+
+    // If the response is HTML, convert it to readable plain text
+    if (contentType.includes("text/html")) {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(text, "text/html");
+      
+      // Remove scripts and styles
+      doc.querySelectorAll("script, style").forEach(el => el.remove());
+      
+      text = doc.body ? doc.body.textContent : text;
+      // Clean up empty lines and multi-spaces
+      text = text.replace(/^\s*[\r\n]/gm, "").replace(/[ \t]+/g, " ");
     }
 
-    const contentType = response.headers.get("content-type") || "";
-    let content;
-
-    if (contentType.includes("application/json")) {
-      const data = await response.json();
-      content = JSON.stringify(data, null, 2);
-    } else {
-      content = await response.text();
-    }
-
-    // Limit output length for terminal display
     const maxChars = 2000;
-    if (content.length > maxChars) {
-      return content.substring(0, maxChars) + `\n\n... [Output truncated: ${content.length} total characters]`;
+    if (text.length > maxChars) {
+      return text.substring(0, maxChars) + "\n... [Output truncated]";
     }
 
-    return content;
+    return text.trim();
   } catch (err) {
-    return `curl: (7) Failed to fetch ${url} (${err.message})`;
+    return `curl: error fetching ${url} (${err.message})`;
   }
 })
